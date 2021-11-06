@@ -1,6 +1,6 @@
 
 def getCxxFlags():
-    return ["/EHsc", "/WX", "/std:c++17"]
+    return ["/EHsc", "/WX", "/std:c++20"]
 
 env = Environment()
 

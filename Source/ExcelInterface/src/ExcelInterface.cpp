@@ -87,7 +87,7 @@ MicrosoftExcel::~MicrosoftExcel()
     if (!m_keepAlive)
     {
       // Tell Excel to quit (i.e. App.Quit)
-      AutoWrap(DISPATCH_METHOD, NULL, m_excelApp, L"Quit", 0);
+      AutoWrap(DISPATCH_METHOD, NULL, m_excelApp, std::wstring(L"Quit").data(), 0);
     }
 
     if (m_worksheet != nullptr)
@@ -114,7 +114,7 @@ void MicrosoftExcel::makeVisible()
   {
     // Make it visible (i.e. app.visible = 1)
     auto x = getArgumentInt32(1);
-    AutoWrap(DISPATCH_PROPERTYPUT, NULL, m_excelApp, L"Visible", 1, x.variant);
+    AutoWrap(DISPATCH_PROPERTYPUT, NULL, m_excelApp, std::wstring(L"Visible").data(), 1, x.variant);
   }
   catch (const std::exception &e)
   {
@@ -129,7 +129,7 @@ void MicrosoftExcel::openSpreadsheet(const OpenSpreadsheetArguments& arguments)
     // Get Workbooks collection
     {
       VARIANT result = getArgumentResult();
-      AutoWrap(DISPATCH_PROPERTYGET, &result, m_excelApp, L"Workbooks", 0);
+      AutoWrap(DISPATCH_PROPERTYGET, &result, m_excelApp, std::wstring(L"Workbooks").data(), 0);
       m_workbooks = result.pdispVal;
     }
 
@@ -142,7 +142,7 @@ void MicrosoftExcel::openSpreadsheet(const OpenSpreadsheetArguments& arguments)
       auto formatArg = arguments.format == OpenSpreadsheetArguments::Format::Default ? getEmptyArgument() : getArgumentInt32(static_cast<int>(arguments.format));
       auto readOnlyArg = getArgumentBool(arguments.readOnly);
       auto passwordArg = arguments.password.empty() ? getEmptyArgument() : getArgumentString(arguments.password);
-      AutoWrap(DISPATCH_PROPERTYGET, &result, m_workbooks, L"Open", 5, passwordArg.variant, formatArg.variant, readOnlyArg.variant, updateLinksArg.variant, fileNameArg.variant);  
+      AutoWrap(DISPATCH_PROPERTYGET, &result, m_workbooks, std::wstring(L"Open").data(), 5, passwordArg.variant, formatArg.variant, readOnlyArg.variant, updateLinksArg.variant, fileNameArg.variant);  
 
       m_workbook = result.pdispVal;
     }
@@ -158,7 +158,7 @@ void MicrosoftExcel::save()
   try
   {
     VARIANT result = getArgumentResult();
-    AutoWrap(DISPATCH_PROPERTYGET, &result, m_workbook, L"Save", 0);
+    AutoWrap(DISPATCH_PROPERTYGET, &result, m_workbook, std::wstring(L"Save").data(), 0);
   }
   catch (const std::exception &e)
   {
@@ -175,7 +175,7 @@ void MicrosoftExcel::selectWorksheet(const std::string &worksheetName)
     // Get Worksheets collection
     {
       VARIANT result = getArgumentResult();
-      AutoWrap(DISPATCH_PROPERTYGET, &result, m_workbook, L"Worksheets", 0);
+      AutoWrap(DISPATCH_PROPERTYGET, &result, m_workbook, std::wstring(L"Worksheets").data(), 0);
       m_worksheets = result.pdispVal;
     }
 
@@ -183,11 +183,11 @@ void MicrosoftExcel::selectWorksheet(const std::string &worksheetName)
     {
       auto sheetNameArg = getArgumentString(wworksheetName);
       VARIANT result = getArgumentResult();
-      AutoWrap(DISPATCH_PROPERTYGET, &result, m_worksheets, L"Item", 1, sheetNameArg.variant);
+      AutoWrap(DISPATCH_PROPERTYGET, &result, m_worksheets, std::wstring(L"Item").data(), 1, sheetNameArg.variant);
       m_worksheet = result.pdispVal;
 
       auto isReplace = getArgumentBool(true);
-      AutoWrap(DISPATCH_PROPERTYGET, nullptr, m_worksheet, L"Select", 1, isReplace.variant);
+      AutoWrap(DISPATCH_PROPERTYGET, nullptr, m_worksheet, std::wstring(L"Select").data(), 1, isReplace.variant);
     }
   }
   catch (const std::exception &e)
@@ -210,12 +210,12 @@ void MicrosoftExcel::setCellValue(const std::string &cellRange, const std::strin
     {
       auto parm = getArgumentString(wcellRange);
       VARIANT result = getArgumentResult();
-      AutoWrap(DISPATCH_PROPERTYGET, &result, m_worksheet, L"Range", 1, parm.variant);
+      AutoWrap(DISPATCH_PROPERTYGET, &result, m_worksheet, std::wstring(L"Range").data(), 1, parm.variant);
       range = result.pdispVal;
     }
 
     auto valueArg = getArgumentString(wvalue);
-    AutoWrap(DISPATCH_PROPERTYPUT, NULL, range, L"Value", 1, valueArg.variant);
+    AutoWrap(DISPATCH_PROPERTYPUT, NULL, range, std::wstring(L"Value").data(), 1, valueArg.variant);
 
     range->Release();
   }

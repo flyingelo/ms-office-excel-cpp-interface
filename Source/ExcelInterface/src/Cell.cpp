@@ -34,7 +34,7 @@ void Cell::setValue(const std::string &value)
   try
   {
     auto valueArg = getArgumentString(to_wstring(value));
-    AutoWrap(DISPATCH_PROPERTYPUT, NULL, m_range, L"Value", 1, valueArg.variant);
+    AutoWrap(DISPATCH_PROPERTYPUT, NULL, m_range, std::wstring(L"Value").data(), 1, valueArg.variant);
   }
   catch (const std::runtime_error &e)
   {
