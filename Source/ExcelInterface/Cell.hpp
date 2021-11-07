@@ -9,16 +9,16 @@ struct IDispatch;
 
 namespace office::excel {
 
-class Cell
-{
-public:
+class Cell {
+ public:
+  using CellDispatch = IDispatch*;
 
-  Cell(IDispatch *);
+  Cell(CellDispatch);
 
   Cell() = delete;
 
   // avoid copying this class, unless a specific need arises
-  Cell(Cell&) = delete; 
+  Cell(Cell&) = delete;
   Cell& operator=(Cell&) = delete;
 
   Cell(Cell&&) = default;
@@ -26,13 +26,19 @@ public:
 
   ~Cell();
 
-  void setValue(const std::string& value);
-  //std::string getValue() const;
+  void setValue(std::int32_t);
+  void setValue(std::int64_t);
+  void setValue(double);
+  void setValue(const std::string&);
 
-private:  
+  std::string getValue() const;
 
-  IDispatch* m_range;
+  double getValueDouble() const;
 
+  std::int64_t getValueInt64() const;
+
+ private:
+  CellDispatch m_cellDispatch{nullptr};
 };
 
-}
+}  // namespace office::excel
