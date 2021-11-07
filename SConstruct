@@ -1,6 +1,6 @@
 
 def getCxxFlags():
-    return ["/EHsc", "/WX", "/std:c++20"]
+    return ["/EHsc", "/W4", "/WX", "/std:c++20"]
 
 env = Environment()
 
@@ -20,10 +20,16 @@ lib = env.Library(
     source = [
         'Build/ExcelInterface/src/Ole.cpp',
         'Build/ExcelInterface/src/Cell.cpp',
+        'Build/ExcelInterface/src/Worksheet.cpp',
+        'Build/ExcelInterface/src/Workbook.cpp',
         'Build/ExcelInterface/src/ExcelInterface.cpp'])
 
 Install('lib', lib)
-Install('include', ['Source/ExcelInterface/Cell.hpp', 'Source/ExcelInterface/ExcelInterface.hpp'])
+Install('include', [
+    'Source/ExcelInterface/Cell.hpp',
+    'Source/ExcelInterface/ExcelInterface.hpp',
+    'Source/ExcelInterface/Workbook.hpp',
+    'Source/ExcelInterface/Worksheet.hpp'])
 
 test = env.Program(
     'Build/tests/Tests',
