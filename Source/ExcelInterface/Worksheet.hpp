@@ -14,6 +14,7 @@ namespace office::excel {
 
 class Worksheet {
  public:
+  using WorksheetName = std::string;
   using WorksheetDispatch = IDispatch*;
 
   Worksheet(WorksheetDispatch);
@@ -29,7 +30,11 @@ class Worksheet {
 
   ~Worksheet();
 
+  WorksheetName getName() const;
+
   Cell& getCell(const std::string&);
+
+  WorksheetDispatch getDispatch() const noexcept;
 
  private:
   std::map<std::string, std::unique_ptr<Cell>> m_cells;

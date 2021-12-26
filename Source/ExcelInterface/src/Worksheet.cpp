@@ -5,14 +5,9 @@
 #include <memory>
 
 #include "Ole.hpp"
+#include "Utilities.hpp"
 
 namespace office::excel {
-
-inline std::wstring to_wstring(const std::string& src) {
-  std::wstring trg(src.size(), L' ');
-  std::copy(std::begin(src), std::end(src), std::begin(trg));
-  return trg;
-}
 
 Worksheet::Worksheet(WorksheetDispatch worksheetDispatch)
     : m_worksheetDispatch(worksheetDispatch) {}
@@ -20,6 +15,22 @@ Worksheet::Worksheet(WorksheetDispatch worksheetDispatch)
 Worksheet::~Worksheet() {
   if (m_worksheetDispatch != nullptr) {
     m_worksheetDispatch->Release();
+  }
+}
+
+Worksheet::WorksheetDispatch Worksheet::getDispatch() const noexcept {
+  return m_worksheetDispatch;
+}
+
+Worksheet::WorksheetName Worksheet::getName() const {
+  try {
+    VARIANT result = getArgumentResult();
+    AutoWrap(DISPATCH_PROPERTYGET, &result, m_worksheetDispatch,
+             std::wstring(L"Name").data(), 0);
+    return to_string(result.bstrVal);
+  } catch (const std::runtime_error& e) {
+    throw std::runtime_error("Worksheet::getName failed. " +
+                             std::string(e.what()));
   }
 }
 
