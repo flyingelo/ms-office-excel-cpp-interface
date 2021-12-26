@@ -8,21 +8,9 @@
 #include <vector>
 
 #include "Ole.hpp"
+#include "Utilities.hpp"
 
 namespace office::excel {
-
-inline std::string to_string(const std::wstring &src) {
-  std::string trg(src.size(), ' ');
-  for (std::size_t i = 0; i < src.size(); ++i) {
-    if (static_cast<int>(src[i]) < 255) {
-      trg[i] = static_cast<char>(src[i]);
-    } else {
-      trg[i] = '#';
-    }
-  }
-
-  return trg;
-}
 
 struct CLSIDContainer {
   CLSIDContainer() {

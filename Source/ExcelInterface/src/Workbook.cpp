@@ -5,14 +5,9 @@
 #include <memory>
 
 #include "Ole.hpp"
+#include "Utilities.hpp"
 
 namespace office::excel {
-
-inline std::wstring to_wstring(const std::string& src) {
-  std::wstring trg(src.size(), L' ');
-  std::copy(std::begin(src), std::end(src), std::begin(trg));
-  return trg;
-}
 
 Workbook::Workbook(IDispatch* workbookDispatch)
     : m_workbookDispatch(workbookDispatch) {
@@ -69,17 +64,10 @@ void Workbook::saveAs(const SaveAsArguments& arguments) {
 
 Worksheet& Workbook::findWorksheet(const std::string& worksheetName) {
   try {
-    // Find the desired worksheet. TODO: do not SELECT it
-
     auto sheetNameArg = getArgumentString(to_wstring(worksheetName));
     VARIANT result = getArgumentResult();
     AutoWrap(DISPATCH_PROPERTYGET, &result, m_worksheetsDispatch,
              std::wstring(L"Item").data(), 1, sheetNameArg.variant);
-
-    auto isReplace = getArgumentBool(true);
-    AutoWrap(DISPATCH_PROPERTYGET, nullptr, result.pdispVal,
-             std::wstring(L"Select").data(), 1, isReplace.variant);
-
     m_worksheet = std::make_unique<Worksheet>(result.pdispVal);
     return *m_worksheet.get();
 
@@ -87,6 +75,17 @@ Worksheet& Workbook::findWorksheet(const std::string& worksheetName) {
     throw std::runtime_error(
         "MicrosoftExcel::selectWorksheet failed. Worksheet: " + worksheetName +
         ". " + std::string(e.what()));
+  }
+}
+
+void Workbook::selectWorksheet(const Worksheet& worksheet) {
+  try {
+    auto isReplace = getArgumentBool(true);
+    AutoWrap(DISPATCH_PROPERTYGET, nullptr, worksheet.getDispatch(),
+             std::wstring(L"Select").data(), 1, isReplace.variant);
+  } catch (const std::exception& e) {
+    throw std::runtime_error("MicrosoftExcel::selectWorksheet failed. " +
+                             std::string(e.what()));
   }
 }
 

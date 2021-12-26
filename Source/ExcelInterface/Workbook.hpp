@@ -51,6 +51,7 @@ class Workbook {
   ~Workbook();
 
   Worksheet& findWorksheet(const std::string&);
+  void selectWorksheet(const Worksheet&);
 
   void save();
 
