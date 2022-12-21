@@ -11,10 +11,8 @@ jobs:
     name: Build and test on Windows
     runs-on: windows-latest
     steps:
-      - uses: actions/checkout@v3
-      - name: Install Microsoft Office
-        run: choco install microsoft-office-deployment      
-      - name: Install scons module
+      - uses: actions/checkout@v3   
+      - name: Install scons
         shell: pwsh
         run: |
           cmd
