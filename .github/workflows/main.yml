@@ -12,6 +12,8 @@ jobs:
     runs-on: windows-latest
     steps:
       - uses: actions/checkout@v3
+      - name: Install Microsoft Office
+        run: choco install choco install microsoft-office-deployment      
       - name: Install scons module
         shell: pwsh
         run: |
