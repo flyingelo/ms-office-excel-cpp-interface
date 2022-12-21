@@ -24,3 +24,8 @@ jobs:
         run: |
           cmd
           scons
+      - name: Test
+        shell: pwsh
+        run: |
+          cmd
+          tests\runTests.bat
