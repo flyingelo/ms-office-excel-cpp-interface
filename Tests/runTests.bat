@@ -1,5 +1,5 @@
 @ECHO OFF
 SETLOCAL
 
-call "..\Build\tests\Tests.exe"
+call %~dp0\..\build\tests\Tests.exe"
 exit /B %ERRORLEVEL%
