@@ -1,0 +1,24 @@
+name: Build and run tests
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+
+  Build-Test-on-Windows:
+    name: Build and test on Windows
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v3
+      - name: Install scons module
+        shell: pwsh
+        run: |
+          cmd
+          pip install scons
+      - name: Build
+        shell: pwsh
+        run: |
+          cmd
+          scons
