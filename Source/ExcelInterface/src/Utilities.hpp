@@ -10,11 +10,13 @@ static inline std::wstring to_wstring(const std::string& src) {
 }
 
 static inline std::string to_string(const std::wstring& src) {
+  constexpr int maxlen{ 255 };
   std::string trg(src.size(), ' ');
   for (std::size_t i = 0; i < src.size(); ++i) {
-    if (static_cast<int>(src[i]) < 255) {
+    if (static_cast<int>(src[i]) < maxlen) {
       trg[i] = static_cast<char>(src[i]);
-    } else {
+    }
+    else {
       trg[i] = '#';
     }
   }

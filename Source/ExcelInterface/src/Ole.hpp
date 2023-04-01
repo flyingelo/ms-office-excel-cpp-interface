@@ -12,33 +12,33 @@
 
 namespace office::excel {
 
-struct VariantContainer {
-  VariantContainer() = default;
-  VariantContainer(VariantContainer &) = delete;
-  VariantContainer(VariantContainer &&) = default;
-  VariantContainer &operator=(VariantContainer &&) = default;
-  VariantContainer &operator=(VariantContainer &) = delete;
+  struct VariantContainer {
+    VariantContainer() = default;
+    VariantContainer(VariantContainer&) = delete;
+    VariantContainer(VariantContainer&&) = default;
+    VariantContainer& operator=(VariantContainer&&) = default;
+    VariantContainer& operator=(VariantContainer&) = delete;
 
-  ~VariantContainer() { VariantClear(&variant); }
+    ~VariantContainer() { VariantClear(&variant); }
 
-  VARIANT variant;
-};
+    VARIANT variant;
+  };
 
-void AutoWrap(WORD autoType, VARIANT *pvResult, IDispatch *pDisp,
-              LPOLESTR ptName, unsigned int cArgs...);
+  void AutoWrap(WORD autoType, VARIANT* pvResult, IDispatch* pDisp,
+    LPOLESTR ptName, unsigned int cArgs...);
 
-VariantContainer getEmptyArgument();
+  VariantContainer getEmptyArgument();
 
-VariantContainer getArgumentInt32(std::int32_t value);
+  VariantContainer getArgumentInt32(std::int32_t value);
 
-VariantContainer getArgumentInt64(std::int64_t value);
+  VariantContainer getArgumentInt64(std::int64_t value);
 
-VariantContainer getArgumentDouble(double value);
+  VariantContainer getArgumentDouble(double value);
 
-VariantContainer getArgumentString(const std::wstring &value);
+  VariantContainer getArgumentString(const std::wstring& value);
 
-VariantContainer getArgumentBool(bool value);
+  VariantContainer getArgumentBool(bool value);
 
-VARIANT getArgumentResult();
+  VARIANT getArgumentResult();
 
 }  // namespace office::excel
