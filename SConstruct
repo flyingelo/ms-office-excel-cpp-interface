@@ -37,3 +37,4 @@ test = env.Program(
     CPPPATH = ['include'],
     LIBPATH = ['lib'],
     LIBS = ['ExcelInterface', 'ole32.lib', 'oleaut32.lib'])
+

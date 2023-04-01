@@ -11,59 +11,61 @@ struct IDispatch;
 
 namespace office::excel {
 
-struct SaveAsArguments {
-  enum class SaveConflictResolution { OverwriteFile = 2, UserResolution = 1 };
+  struct SaveAsArguments {
+    enum class SaveConflictResolution { OverwriteFile = 2, UserResolution = 1 };
 
-  std::filesystem::path fileName;
-  enum SaveConflictResolution saveConflictResolution {
-    SaveConflictResolution::UserResolution
+    std::filesystem::path fileName;
+    enum SaveConflictResolution saveConflictResolution {
+      SaveConflictResolution::UserResolution
+    };
+
+    SaveAsArguments(const std::filesystem::path& fileName)
+      : fileName(std::filesystem::absolute(fileName)) {}
+    SaveAsArguments(const std::string& fileName)
+      : SaveAsArguments(std::filesystem::path(fileName)) {}
+    SaveAsArguments(const std::wstring& fileName)
+      : SaveAsArguments(std::filesystem::path(fileName)) {}
+
+    SaveAsArguments() = default;
+    SaveAsArguments(SaveAsArguments&) = default;
+    SaveAsArguments(SaveAsArguments&&) = default;
+    SaveAsArguments& operator=(SaveAsArguments&&) = default;
+    SaveAsArguments& operator=(const SaveAsArguments&) = default;
+
+    ~SaveAsArguments() = default;
   };
 
-  SaveAsArguments(const std::filesystem::path& fileName)
-      : fileName(std::filesystem::absolute(fileName)) {}
-  SaveAsArguments(const std::string& fileName)
-      : SaveAsArguments(std::filesystem::path(fileName)) {}
-  SaveAsArguments(const std::wstring& fileName)
-      : SaveAsArguments(std::filesystem::path(fileName)) {}
+  class Workbook {
+  public:
+    using WorksheetName = std::string;
 
-  SaveAsArguments() = default;
-  SaveAsArguments(SaveAsArguments&) = default;
-  SaveAsArguments(SaveAsArguments&&) = default;
-  SaveAsArguments& operator=(SaveAsArguments&&) = default;
-  SaveAsArguments& operator=(SaveAsArguments&) = default;
-};
+    Workbook(IDispatch* dispatch);
 
-class Workbook {
- public:
-  using WorksheetName = std::string;
+    Workbook() = delete;
 
-  Workbook(IDispatch*);
+    // avoid copying this class, unless a specific need arises
+    Workbook(Workbook&) = delete;
+    Workbook& operator=(Workbook&) = delete;
 
-  Workbook() = delete;
+    Workbook(Workbook&&) = default;
+    Workbook& operator=(Workbook&&) = default;
 
-  // avoid copying this class, unless a specific need arises
-  Workbook(Workbook&) = delete;
-  Workbook& operator=(Workbook&) = delete;
+    ~Workbook();
 
-  Workbook(Workbook&&) = default;
-  Workbook& operator=(Workbook&&) = default;
+    Worksheet& findWorksheet(const std::string& name);
+    void selectWorksheet(const Worksheet& worksheet);
 
-  ~Workbook();
+    void save();
 
-  Worksheet& findWorksheet(const std::string&);
-  void selectWorksheet(const Worksheet&);
+    void saveAs(const SaveAsArguments& arguments);
 
-  void save();
+  private:
+    using WorkbookDispatch = IDispatch*;
+    using WorksheetsDispatch = IDispatch*;
 
-  void saveAs(const SaveAsArguments&);
-
- private:
-  using WorkbookDispatch = IDispatch*;
-  using WorksheetsDispatch = IDispatch*;
-
-  std::unique_ptr<Worksheet> m_worksheet;
-  WorksheetsDispatch m_worksheetsDispatch{nullptr};
-  WorkbookDispatch m_workbookDispatch;
-};
+    std::unique_ptr<Worksheet> m_worksheet;
+    WorksheetsDispatch m_worksheetsDispatch{ nullptr };
+    WorkbookDispatch m_workbookDispatch;
+  };
 
 }  // namespace office::excel
