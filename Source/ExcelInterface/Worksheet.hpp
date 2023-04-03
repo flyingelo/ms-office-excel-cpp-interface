@@ -34,6 +34,8 @@ namespace office::excel {
 
     Cell& getCell(const std::string& cellCoords);
 
+    Cell& getCell(std::uint32_t row, std::uint16_t column);
+
     [[nodiscard]] WorksheetDispatch getDispatch() const noexcept;
 
   private:

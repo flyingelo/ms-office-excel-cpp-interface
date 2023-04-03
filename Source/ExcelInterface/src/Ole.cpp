@@ -22,7 +22,7 @@ namespace office::excel {
   void AutoWrap(WORD autoType, VARIANT* pvResult, IDispatch* pDisp,
     LPOLESTR ptName, unsigned int cArgs...) {
     // Begin variable-argument list...
-    va_list marker;
+    va_list marker = nullptr;
     va_start(marker, static_cast<int>(cArgs));
 
     if (pDisp == nullptr) {
@@ -31,7 +31,7 @@ namespace office::excel {
 
     // Variables used...
     DISPID dispidNamed = DISPID_PROPERTYPUT;
-    DISPID dispID;
+    DISPID dispID = 0;
 
     // Get DISPID for name passed...
     if (FAILED(pDisp->GetIDsOfNames(IID_NULL, &ptName, 1, LOCALE_USER_DEFAULT,
@@ -53,7 +53,7 @@ namespace office::excel {
 
     // Make the call!
     if (FAILED(pDisp->Invoke(dispID, IID_NULL, LOCALE_SYSTEM_DEFAULT, autoType,
-      &dp, pvResult, NULL, NULL))) {
+      &dp, pvResult, nullptr, nullptr))) {
       throw std::runtime_error("IDispatch::Invoke failed.");
     }
 
@@ -64,35 +64,35 @@ namespace office::excel {
   VariantContainer getEmptyArgument() {
     // make empty argument:
     // https://support.microsoft.com/en-us/topic/office-automation-using-visual-c-67da40c2-7671-f700-474d-36ac522d76f2
-    VariantContainer varOpt;
+    VariantContainer varOpt{};
     varOpt.variant.vt = VT_ERROR;
     varOpt.variant.scode = DISP_E_PARAMNOTFOUND;
     return varOpt;
   }
 
   VariantContainer getArgumentInt32(std::int32_t value) {
-    VariantContainer var;
+    VariantContainer var{};
     var.variant.vt = VT_I4;
     var.variant.lVal = value;
     return var;
   }
 
   VariantContainer getArgumentInt64(std::int64_t value) {
-    VariantContainer var;
+    VariantContainer var{};
     var.variant.vt = VT_I8;
     var.variant.llVal = value;
     return var;
   }
 
   VariantContainer getArgumentDouble(double value) {
-    VariantContainer var;
+    VariantContainer var{};
     var.variant.vt = VT_R8;
     var.variant.dblVal = value;
     return var;
   }
 
   VariantContainer getArgumentString(const std::wstring& value) {
-    VariantContainer container;
+    VariantContainer container{};
     container.variant.vt = VT_BSTR;
     container.variant.bstrVal = ::SysAllocString(value.c_str());
     return container;
@@ -100,7 +100,7 @@ namespace office::excel {
 
   VariantContainer getArgumentBool(bool value) {
     // set read-only mode
-    VariantContainer var;
+    VariantContainer var{};
     var.variant.vt = VT_BOOL;
     var.variant.bVal = static_cast<BYTE>(value);
     return var;
