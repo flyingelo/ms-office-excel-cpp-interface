@@ -127,6 +127,8 @@ int main(int argc, const char* argv[]) {
       std::cout << "Debug mode, not running tests\n";
     }
 
+    throw std::runtime_error("fail");
+
     std::cout << "All Excel tests passed\n";
     std::cout << "==================================================\n";
 
