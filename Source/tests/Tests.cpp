@@ -80,6 +80,15 @@ static void checkSpreadsheetValues() {
   }
 }
 
+static void basicReadTest() {
+  office::excel::MicrosoftExcel excel;
+  const std::string fileName{"test.xlsx"};
+  auto& workbook = excel.openWorkbook(fileName);
+  auto& worksheet = workbook.findWorksheet("Sheet1");
+  auto& cell = worksheet.getCell("C12");
+  const auto value = cell.getValue();
+}
+
 static void makeExcelVisibleTest() {
   // not sure how to actually check that it pops up,
   // but assume that if it doesn't crash, it's ok
@@ -111,6 +120,7 @@ int main(int argc, const char* argv[]) {
     if (!debug) {
       createTestSpreadsheet();
       checkSpreadsheetValues();
+      basicReadTest();
       makeExcelVisibleTest();
     }
     else {

@@ -39,7 +39,7 @@ namespace office::excel {
     public:
         MicrosoftExcel(bool keepAlive);
 
-        MicrosoftExcel() = delete;
+        MicrosoftExcel();
 
         // avoid copying this class, unless a specific need arises
         MicrosoftExcel(MicrosoftExcel&) = delete;

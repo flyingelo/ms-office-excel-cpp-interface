@@ -57,6 +57,10 @@ namespace office::excel {
     }
   }
 
+  MicrosoftExcel::MicrosoftExcel()
+    : MicrosoftExcel(false) {
+  }
+
   MicrosoftExcel::~MicrosoftExcel() {
     try {
       if (!m_keepAlive) {
