@@ -1,6 +1,6 @@
 
 def getCxxFlags():
-    return ["/EHsc", "/W4", "/WX", "/std:c++20"]
+    return ["/EHsc", "/W4", "/WX", "/std:c++20", "/O2"]
 
 env = Environment()
 
@@ -31,10 +31,24 @@ Install('include', [
     'Source/ExcelInterface/Workbook.hpp',
     'Source/ExcelInterface/Worksheet.hpp'])
 
+coordsTest = env.Program(
+    'Build/tests/CoordsTests',
+    source = ['Build/tests/CoordsTests.cpp'],
+    CPPPATH = ['Source/ExcelInterface']
+)
+
 test = env.Program(
     'Build/tests/Tests',
     source = ['Build/tests/Tests.cpp'],
     CPPPATH = ['include'],
     LIBPATH = ['lib'],
-    LIBS = ['ExcelInterface', 'ole32.lib', 'oleaut32.lib'])
+    LIBS = ['ExcelInterface', 'ole32.lib', 'oleaut32.lib']
+)
 
+perfTests = env.Program(
+    'Build/tests/PerformanceTests',
+    source = ['Build/tests/PerformanceTests.cpp'],
+    CPPPATH = ['include'],
+    LIBPATH = ['lib'],
+    LIBS = ['ExcelInterface', 'ole32.lib', 'oleaut32.lib']
+)

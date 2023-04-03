@@ -6,7 +6,7 @@
 
 #include "ExcelInterface.hpp"
 
-constexpr int intValue{ 42 };
+constexpr std::int64_t intValue{ 42 };
 constexpr double doubleValue{ 55.6 };
 
 static void createTestSpreadsheet() {
@@ -36,6 +36,10 @@ static void createTestSpreadsheet() {
 
   worksheet.getCell("D12").setValue(intValue);
   worksheet.getCell("E12").setValue(doubleValue);
+
+  constexpr std::uint32_t row5000{ 5000U };
+  constexpr std::uint16_t col6000{ 6000U };
+  worksheet.getCell(row5000, col6000).setValue(intValue);
 
   std::cout << "Save workbook... ";
   office::excel::SaveAsArguments saveArgs(spreadsheetName);
@@ -68,6 +72,12 @@ static void checkSpreadsheetValues() {
       "Unexpected value at cell E12. Expected 55.6, got " +
       std::to_string(e12value));
   }
+
+  const auto valueHVU5001 = worksheet.getCell("HVU5001").getValueInt64();
+  if (valueHVU5001 != intValue) {
+    throw std::runtime_error("Unexpected value at cell HVU5001. Expected " + std::to_string(intValue) + ", got " +
+      std::to_string(valueHVU5001));
+  }
 }
 
 static void makeExcelVisibleTest() {
@@ -84,6 +94,9 @@ static void makeExcelVisibleTest() {
 
 int main(int argc, const char* argv[]) {
   try {
+
+    std::cout << "==================================================\n";
+    std::cout << "Running Excel tests\n";
 
     const std::vector<std::string> arguments(argv, argv + argc);
 
@@ -103,6 +116,9 @@ int main(int argc, const char* argv[]) {
     else {
       std::cout << "Debug mode, not running tests\n";
     }
+
+    std::cout << "All Excel tests passed\n";
+    std::cout << "==================================================\n";
 
   }
   catch (const std::exception& e) {

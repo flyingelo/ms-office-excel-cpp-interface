@@ -4,6 +4,7 @@
 
 #include <memory>
 
+#include "getCellCoords.hpp"
 #include "Ole.hpp"
 #include "Utilities.hpp"
 
@@ -35,23 +36,27 @@ namespace office::excel {
     }
   }
 
-  Cell& Worksheet::getCell(const std::string& cellRange) {
-    if (m_cells.find(cellRange) == std::end(m_cells)) {
+  Cell& Worksheet::getCell(const std::string& cellCoords) {
+    if (m_cells.find(cellCoords) == std::end(m_cells)) {
       try {
-        auto parm = getArgumentString(to_wstring(cellRange));
+        auto parm = getArgumentString(to_wstring(cellCoords));
         VARIANT result = getArgumentResult();
         AutoWrap(DISPATCH_PROPERTYGET, &result, m_worksheetDispatch,
           std::wstring(L"Range").data(), 1, parm.variant);
         m_cells.insert(
-          std::make_pair(cellRange, std::make_unique<Cell>(result.pdispVal)));
+          std::make_pair(cellCoords, std::make_unique<Cell>(result.pdispVal)));
       }
       catch (const std::runtime_error& e) {
         throw std::runtime_error("MicrosoftExcel::getCell failed. Cell range: " +
-          cellRange + ". " + std::string(e.what()));
+          cellCoords + ". " + std::string(e.what()));
       }
     }
 
-    return *m_cells.at(cellRange).get();
+    return *m_cells.at(cellCoords).get();
+  }
+
+  Cell& Worksheet::getCell(std::uint32_t row, std::uint16_t column) {
+    return getCell(utils::getCellCoords(row, column));
   }
 
 }  // namespace office::excel

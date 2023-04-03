@@ -36,7 +36,7 @@ namespace office::excel {
     [[nodiscard]] const CLSID& getCLSID() const { return m_clsid; }
 
   private:
-    CLSID m_clsid;
+    CLSID m_clsid{};
   };
 
   MicrosoftExcel::MicrosoftExcel(bool keepAlive)
@@ -61,12 +61,17 @@ namespace office::excel {
     try {
       if (!m_keepAlive) {
         // Tell Excel to quit (i.e. App.Quit)
-        AutoWrap(DISPATCH_METHOD, NULL, m_excelApp, std::wstring(L"Quit").data(),
-          0);
+        AutoWrap(DISPATCH_METHOD, nullptr, m_excelApp, std::wstring(L"Quit").data(), 0);
       }
 
-      if (m_workbooks != nullptr) m_workbooks->Release();
-      if (m_excelApp != nullptr) m_excelApp->Release();
+      if (m_workbooks != nullptr) {
+        m_workbooks->Release();
+      }
+
+      if (m_excelApp != nullptr) {
+        m_excelApp->Release();
+      }
+
       // do not delete m_dispatch - someone else appears to own it :(
       // for the same reason, m_dispatch cannot be a unique_ptr.
     }
@@ -79,7 +84,7 @@ namespace office::excel {
     try {
       // Make it visible (i.e. app.visible = 1)
       auto x = getArgumentInt32(1);
-      AutoWrap(DISPATCH_PROPERTYPUT, NULL, m_excelApp,
+      AutoWrap(DISPATCH_PROPERTYPUT, nullptr, m_excelApp,
         std::wstring(L"Visible").data(), 1, x.variant);
     }
     catch (const std::exception& e) {
@@ -105,7 +110,7 @@ namespace office::excel {
         formatArg.variant, readOnlyArg.variant, updateLinksArg.variant,
         fileNameArg.variant);
       m_workbook = std::make_unique<Workbook>(result.pdispVal);
-      return *m_workbook.get();
+      return *m_workbook;
     }
     catch (const std::exception& e) {
       throw std::runtime_error("MicrosoftExcel::openWorkbook failed. Workbook: " +
@@ -121,7 +126,7 @@ namespace office::excel {
       AutoWrap(DISPATCH_PROPERTYGET, &result, m_workbooks,
         std::wstring(L"Add").data(), 0);
       m_workbook = std::make_unique<Workbook>(result.pdispVal);
-      return *m_workbook.get();
+      return *m_workbook;
     }
     catch (const std::exception& e) {
       throw std::runtime_error("MicrosoftExcel::getWorkbook failed. " +

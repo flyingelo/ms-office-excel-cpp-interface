@@ -66,7 +66,10 @@
         "forward_list": "cpp",
         "iterator": "cpp",
         "optional": "cpp",
-        "span": "cpp"
+        "span": "cpp",
+        "mutex": "cpp",
+        "stop_token": "cpp",
+        "thread": "cpp"
     },
     "C_Cpp.codeAnalysis.clangTidy.enabled": true,
     "C_Cpp.codeAnalysis.runAutomatically": true,
@@ -89,7 +92,7 @@
         "readability-else-after-return",
         "readability-identifier-length",
         "bugprone-easily-swappable-parameters",
-        "bugprone-exception-escape"
+        "bugprone-exception-escape",
     ],
     "editor.tabSize": 2,
     "editor.insertSpaces": true,
