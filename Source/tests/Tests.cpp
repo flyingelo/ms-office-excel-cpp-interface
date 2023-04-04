@@ -84,8 +84,8 @@ static void basicReadTest() {
   office::excel::MicrosoftExcel excel;
   const std::string fileName{"test.xlsx"};
   auto& workbook = excel.openWorkbook(fileName);
-  auto& worksheet = workbook.findWorksheet("Sheet1");
-  auto& cell = worksheet.getCell("C12");
+  const auto& worksheet = workbook.findWorksheet("Sheet1");
+  const auto& cell = worksheet.getCell("C12");
   const auto value = cell.getValue();
 }
 
