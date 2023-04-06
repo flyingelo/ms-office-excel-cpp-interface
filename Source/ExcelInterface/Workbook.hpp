@@ -39,6 +39,8 @@ namespace office::excel {
   public:
     using WorksheetName = std::string;
 
+    using WorkbookDispatch = IDispatch*;
+
     Workbook(IDispatch* dispatch);
 
     Workbook() = delete;
@@ -52,7 +54,9 @@ namespace office::excel {
 
     ~Workbook();
 
-    Worksheet& findWorksheet(const std::string& name);
+    Worksheet& findWorksheet(const WorksheetName& name);
+    const Worksheet& findWorksheet(const WorksheetName& name) const;
+
     void selectWorksheet(const Worksheet& worksheet);
 
     void save();
@@ -60,7 +64,6 @@ namespace office::excel {
     void saveAs(const SaveAsArguments& arguments);
 
   private:
-    using WorkbookDispatch = IDispatch*;
     using WorksheetsDispatch = IDispatch*;
 
     std::unique_ptr<Worksheet> m_worksheet;

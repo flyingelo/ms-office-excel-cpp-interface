@@ -9,6 +9,32 @@
 
 namespace office::excel {
 
+  using WorkbookPointer = std::uintptr_t;
+  using WorksheetMap = std::map<WorkbookPointer, std::map<Workbook::WorksheetName, std::unique_ptr<Worksheet>>>;
+  static WorksheetMap worksheetMap;
+
+  static Worksheet* getWorksheetFromMap(
+    Workbook::WorkbookDispatch workbookDispatch,
+    IDispatch* worksheetsDispatch,
+    const Workbook::WorksheetName& worksheetName) {
+
+    auto& workbookWorksheets = worksheetMap.at(reinterpret_cast<WorkbookPointer>(workbookDispatch));
+    if (workbookWorksheets.find(worksheetName) == std::end(workbookWorksheets)) {
+      try {
+        auto sheetNameArg = getArgumentString(to_wstring(worksheetName));
+        VARIANT result = getArgumentResult();
+        AutoWrap(DISPATCH_PROPERTYGET, &result, worksheetsDispatch, std::wstring(L"Item").data(), 1, sheetNameArg.variant);
+        workbookWorksheets.insert(std::make_pair(worksheetName, std::make_unique<Worksheet>(result.pdispVal)));
+      }
+      catch (const std::runtime_error& e) {
+        throw std::runtime_error("MicrosoftExcel::findWorksheet failed. Worksheet name: " +
+          worksheetName + ". " + std::string(e.what()));
+      }
+    }
+
+    return workbookWorksheets.at(worksheetName).get();
+  }
+
   Workbook::Workbook(IDispatch* workbookDispatch)
     : m_workbookDispatch(workbookDispatch) {
     // Get Worksheets collection
@@ -17,10 +43,15 @@ namespace office::excel {
         AutoWrap(DISPATCH_PROPERTYGET, &result, m_workbookDispatch,
           std::wstring(L"Worksheets").data(), 0);
         m_worksheetsDispatch = result.pdispVal;
+
+        worksheetMap.insert(std::make_pair(reinterpret_cast<std::uintptr_t>(m_workbookDispatch), std::map<Workbook::WorksheetName, std::unique_ptr<Worksheet>>()));
       }
   }
 
   Workbook::~Workbook() {
+
+    worksheetMap.erase(reinterpret_cast<std::uintptr_t>(m_workbookDispatch));
+
     if (m_worksheetsDispatch != nullptr) {
       m_worksheetsDispatch->Release();
     }
@@ -64,21 +95,12 @@ namespace office::excel {
     }
   }
 
-  Worksheet& Workbook::findWorksheet(const std::string& worksheetName) {
-    try {
-      auto sheetNameArg = getArgumentString(to_wstring(worksheetName));
-      VARIANT result = getArgumentResult();
-      AutoWrap(DISPATCH_PROPERTYGET, &result, m_worksheetsDispatch,
-        std::wstring(L"Item").data(), 1, sheetNameArg.variant);
-      m_worksheet = std::make_unique<Worksheet>(result.pdispVal);
-      return *m_worksheet.get();
+  Worksheet& Workbook::findWorksheet(const WorksheetName& worksheetName) {
+    return *getWorksheetFromMap(m_workbookDispatch, m_worksheetsDispatch, worksheetName);
+  }
 
-    }
-    catch (const std::exception& e) {
-      throw std::runtime_error(
-        "MicrosoftExcel::selectWorksheet failed. Worksheet: " + worksheetName +
-        ". " + std::string(e.what()));
-    }
+  const Worksheet& Workbook::findWorksheet(const WorksheetName& worksheetName) const {
+    return *getWorksheetFromMap(m_workbookDispatch, m_worksheetsDispatch, worksheetName);
   }
 
   void Workbook::selectWorksheet(const Worksheet& worksheet) {

@@ -119,8 +119,7 @@ namespace office::excel {
   std::int64_t Cell::getValueInt64() const {
     try {
       VARIANT result = getArgumentResult();
-      AutoWrap(DISPATCH_PROPERTYGET, &result, m_cellDispatch,
-        std::wstring(L"Value").data(), 0);
+      AutoWrap(DISPATCH_PROPERTYGET, &result, m_cellDispatch, std::wstring(L"Value").data(), 0);
       if (result.vt == VARENUM::VT_R8) {
         return static_cast<std::int64_t>(result.dblVal);
       }

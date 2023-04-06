@@ -10,10 +10,11 @@
 
 namespace office::excel {
 
-  using CellMap = std::map<std::uintptr_t, std::map<std::string, std::unique_ptr<Cell>>>;
+  using CellCoords = std::string;
+  using CellMap = std::map<std::uintptr_t, std::map<CellCoords, std::unique_ptr<Cell>>>;
   static CellMap cellMap;
 
-  static Cell* getCellFromMap(Worksheet::WorksheetDispatch worksheetDispatch, const std::string& cellCoords) {
+  static Cell* getCellFromMap(Worksheet::WorksheetDispatch worksheetDispatch, const CellCoords& cellCoords) {
     auto& worksheetCells = cellMap.at(reinterpret_cast<std::uintptr_t>(worksheetDispatch));
     if (worksheetCells.find(cellCoords) == std::end(worksheetCells)) {
       try {

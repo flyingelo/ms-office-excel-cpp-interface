@@ -10,7 +10,7 @@ constexpr std::int64_t intValue{ 42 };
 constexpr double doubleValue{ 55.6 };
 
 static void createTestSpreadsheet() {
-  const std::filesystem::path spreadsheetName("test.xlsx");
+  const std::filesystem::path spreadsheetName("test2.xlsx");
 
   const bool keepExcelAlive{ false };
 
@@ -50,7 +50,7 @@ static void createTestSpreadsheet() {
 }
 
 static void checkSpreadsheetValues() {
-  const std::filesystem::path spreadsheetName("test.xlsx");
+  const std::filesystem::path spreadsheetName("test2.xlsx");
   const bool keepExcelAlive{ false };
   office::excel::MicrosoftExcel excel(keepExcelAlive);
   auto& workbook = excel.openWorkbook(spreadsheetName);
@@ -80,13 +80,28 @@ static void checkSpreadsheetValues() {
   }
 }
 
-static void basicReadTest() {
+static void basicWriteTest() {
+  const std::filesystem::path spreadsheetName("test.xlsx");
   office::excel::MicrosoftExcel excel;
-  const std::string fileName{"test.xlsx"};
-  auto& workbook = excel.openWorkbook(fileName);
+  auto& workbook = excel.getWorkbook();
+  auto& worksheet = workbook.findWorksheet("Sheet1");
+  auto& cell = worksheet.getCell("C12");
+  cell.setValue(1);
+  workbook.saveAs(spreadsheetName);
+}
+
+static void basicReadTest() {
+  const std::filesystem::path spreadsheetName{"test.xlsx"};
+  office::excel::MicrosoftExcel excel;
+  const auto& workbook = excel.openWorkbook(spreadsheetName);
   const auto& worksheet = workbook.findWorksheet("Sheet1");
   const auto& cell = worksheet.getCell("C12");
-  const auto value = cell.getValue();
+  const auto value = cell.getValueInt64();
+
+  // check value
+  if (value != 1) {
+    throw std::runtime_error("Unexpected value at cell C12. Expected 1, got " + std::to_string(value));
+  }
 }
 
 static void makeExcelVisibleTest() {
@@ -118,9 +133,10 @@ int main(int argc, const char* argv[]) {
     }
 
     if (!debug) {
+      basicWriteTest();
+      basicReadTest();
       createTestSpreadsheet();
       checkSpreadsheetValues();
-      basicReadTest();
       makeExcelVisibleTest();
     }
     else {
