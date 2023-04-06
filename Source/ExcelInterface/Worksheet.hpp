@@ -33,13 +33,14 @@ namespace office::excel {
     [[nodiscard]] WorksheetName getName() const;
 
     Cell& getCell(const std::string& cellCoords);
+    [[nodiscard]] const Cell& getCell(const std::string& cellCoords) const;
 
     Cell& getCell(std::uint32_t row, std::uint16_t column);
+    [[nodiscard]] const Cell& getCell(std::uint32_t row, std::uint16_t column) const;
 
     [[nodiscard]] WorksheetDispatch getDispatch() const noexcept;
 
   private:
-    std::map<std::string, std::unique_ptr<Cell>> m_cells;
     WorksheetDispatch m_worksheetDispatch{ nullptr };
   };
 
